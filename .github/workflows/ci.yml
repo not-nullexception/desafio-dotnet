@@ -36,7 +36,7 @@ jobs:
 
       - name: Install dotnet-ef tool
         run: |
-          dotnet tool install --global dotnet-ef --version 8.0.0
+          dotnet tool install --global dotnet-ef
         env:
           PATH: ${{ runner.tool_cache }}/dotnet/tools:${{ env.PATH }}
 
