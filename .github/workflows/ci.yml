@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Your_password123
+          POSTGRES_DB: DesafioDB
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install Dependencies
+        run: dotnet restore
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..10}; do
+            pg_isready -h localhost -p 5432 -U postgres && break
+            echo "Esperando PostgreSQL..."
+            sleep 5
+          done
+
+      - name: Apply Migrations
+        run: dotnet ef database update --project DesafioTecnico.Api/DesafioTecnico.Api.csproj --startup-project DesafioTecnico.Api/DesafioTecnico.Api.csproj
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=DesafioDB;Username=postgres;Password=Your_password123"
+
+      - name: Build
+        run: dotnet build --no-restore --verbosity normal
+
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
