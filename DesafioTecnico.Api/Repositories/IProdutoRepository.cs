@@ -6,6 +6,6 @@ namespace DesafioTecnico.Api.Repositories
   {
     Task<IEnumerable<Produto>> GetAllAsync();
     Task<Produto?> GetByIdAsync(int id);
-    Task AddAsync(Produto produto);
+    Task<Produto> AddAsync(Produto produto);
   }
 }

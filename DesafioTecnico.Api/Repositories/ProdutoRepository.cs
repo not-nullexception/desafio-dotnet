@@ -23,10 +23,11 @@ namespace DesafioTecnico.Api.Repositories
       return await _context.Produtos.FindAsync(id);
     }
 
-    public async Task AddAsync(Produto produto)
+    public async Task<Produto> AddAsync(Produto produto)
     {
       await _context.Produtos.AddAsync(produto);
       await _context.SaveChangesAsync();
+      return produto;
     }
   }
 }

@@ -24,8 +24,10 @@ namespace DesafioTecnico.Api.Services
 
     public async Task<Produto> CreateProdutoAsync(Produto produto)
     {
-      await _produtoRepository.AddAsync(produto);
-      return produto;
+      if (string.IsNullOrWhiteSpace(produto.Nome) || produto.Preco < 0)
+        throw new ArgumentException("Produto inválido.");
+
+      return await _produtoRepository.AddAsync(produto);
     }
   }
 }
